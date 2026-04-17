@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-<<<<<<< Updated upstream
-=======
-  swcMinify: true,
   async headers() {
     return [
       {
@@ -27,7 +24,6 @@ const nextConfig = {
       },
     ];
   },
->>>>>>> Stashed changes
 };
 
 module.exports = nextConfig;

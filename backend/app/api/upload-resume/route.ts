@@ -13,38 +13,12 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-// Handle CORS preflight requests
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
-  });
-}
-
 export async function POST(request: Request) {
   try {
     const { userId } = await auth();
 
     console.log("🔍 UPLOAD DEBUG — userId:", userId);
 
-<<<<<<< Updated upstream
-  if (!userId) {
-    console.error("❌ AUTH FAILED — userId is null");
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      {
-        status: 401,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
-  }
-=======
     if (!userId) {
       console.error("❌ AUTH FAILED — userId is null");
       return NextResponse.json(
@@ -52,7 +26,6 @@ export async function POST(request: Request) {
         { status: 401, headers: corsHeaders }
       );
     }
->>>>>>> Stashed changes
 
     const formData = await request.formData();
     const file = formData.get("file");
@@ -116,6 +89,10 @@ export async function POST(request: Request) {
 
     console.log("✅ UPLOAD SUCCESS — data:", data);
 
+    // Extract text from PDF for resume_text field
+    // For now, store the file path as text content
+    const resumeText = `Resume: ${file.name}\nFile path: ${filePath}`;
+
     // Save to database
     const { error: dbError } = await supabase.from("resumes").insert({
       user_id: userId,
@@ -130,6 +107,16 @@ export async function POST(request: Request) {
         { error: dbError.message },
         { status: 500, headers: corsHeaders }
       );
+    }
+
+    // Update profile with resume_text
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ resume_text: resumeText, updated_at: new Date().toISOString() })
+      .eq("id", userId);
+
+    if (profileError) {
+      console.error("❌ PROFILE UPDATE ERROR:", profileError);
     }
 
     console.log("✅ DATABASE SAVED — userId:", userId);
@@ -149,37 +136,4 @@ export async function POST(request: Request) {
       { status: 500, headers: corsHeaders }
     );
   }
-<<<<<<< Updated upstream
-
-  console.log("✅ UPLOAD SUCCESS — data:", data);
-
-  // Save to database
-  const { error: dbError } = await supabase.from("resumes").insert({
-    user_id: userId,
-    file_path: filePath,
-    file_name: file.name,
-  });
-
-  if (dbError) {
-    console.error("❌ DATABASE ERROR:", dbError);
-    return NextResponse.json({ error: dbError.message }, { status: 500 });
-  }
-
-  console.log("✅ DATABASE SAVED — userId:", userId);
-  return NextResponse.json(
-    {
-      success: true,
-      file_url: filePath,
-      message: "Resume uploaded successfully",
-    },
-    {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      },
-    }
-  );
-=======
->>>>>>> Stashed changes
 }
