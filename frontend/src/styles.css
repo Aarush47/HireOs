@@ -63,14 +63,14 @@
   --radius: 0.75rem;
 
   /* Brand */
-  --bg-light: oklch(0.93 0.005 90);          /* #E8E8E4 warm off-white */
-  --bg-dark: oklch(0.2 0 0);                 /* #1A1A1A near-black */
-  --card-warm: oklch(0.95 0.005 95);         /* #F0F0EC */
-  --text-muted: oklch(0.45 0 0);             /* #555 */
+  --bg-light: oklch(0.93 0.005 90); /* #E8E8E4 warm off-white */
+  --bg-dark: oklch(0.2 0 0); /* #1A1A1A near-black */
+  --card-warm: oklch(0.95 0.005 95); /* #F0F0EC */
+  --text-muted: oklch(0.45 0 0); /* #555 */
 
   /* Semantic mapping */
   --background: var(--bg-light);
-  --foreground: oklch(0.15 0 0);             /* #111 */
+  --foreground: oklch(0.15 0 0); /* #111 */
   --card: var(--card-warm);
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
@@ -81,7 +81,7 @@
   --secondary-foreground: oklch(0.15 0 0);
   --muted: var(--card-warm);
   --muted-foreground: var(--text-muted);
-  --accent: oklch(0.92 0.22 125);            /* #C8FF00 electric chartreuse */
+  --accent: oklch(0.92 0.22 125); /* #C8FF00 electric chartreuse */
   --accent-foreground: oklch(0.15 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
@@ -93,7 +93,7 @@
 .dark {
   --background: var(--bg-dark);
   --foreground: oklch(0.98 0 0);
-  --card: oklch(0.25 0 0);                   /* #2A2A2A */
+  --card: oklch(0.25 0 0); /* #2A2A2A */
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.25 0 0);
   --popover-foreground: oklch(0.98 0 0);
@@ -126,11 +126,22 @@
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.005em;
     background-image:
-      radial-gradient(circle at 14% -8%, color-mix(in oklab, var(--accent) 13%, transparent), transparent 42%),
-      radial-gradient(circle at 88% 8%, color-mix(in oklab, var(--accent) 8%, transparent), transparent 40%);
+      radial-gradient(
+        circle at 14% -8%,
+        color-mix(in oklab, var(--accent) 13%, transparent),
+        transparent 42%
+      ),
+      radial-gradient(
+        circle at 88% 8%,
+        color-mix(in oklab, var(--accent) 8%, transparent),
+        transparent 40%
+      );
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.025em;
     line-height: 1.02;
@@ -160,22 +171,24 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: transform .2s ease, box-shadow .2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
   .btn-accent:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px -10px color-mix(in oklab, var(--accent) 60%, transparent);
   }
   .btn-outline-light {
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     color: #fff;
     padding: 12px 22px;
     border-radius: 4px;
     background: transparent;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
   }
   .btn-outline-light:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border-color: #fff;
   }
 
@@ -190,11 +203,7 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: linear-gradient(
-      120deg,
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0)
-    );
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
     opacity: 0.5;
   }
 
@@ -220,21 +229,43 @@
 }
 
 @keyframes float-y {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
-.float-y { animation: float-y 4s ease-in-out infinite; }
+.float-y {
+  animation: float-y 4s ease-in-out infinite;
+}
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: .5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
-.pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+.pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
 
 @keyframes shimmer-x {
-  0% { transform: translateX(-30%); opacity: 0.2; }
-  50% { opacity: 0.55; }
-  100% { transform: translateX(30%); opacity: 0.2; }
+  0% {
+    transform: translateX(-30%);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(30%);
+    opacity: 0.2;
+  }
 }
 
 .shimmer-x {

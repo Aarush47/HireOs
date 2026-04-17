@@ -29,11 +29,18 @@ export function UseCases() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".uc-left > *", {
-        y: 30, opacity: 0, stagger: 0.1, duration: 0.7, ease: "power3.out",
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.7,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
       gsap.from(".uc-image", {
-        y: 40, opacity: 0, duration: 0.8, ease: "power3.out",
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
         scrollTrigger: { trigger: ".uc-diagram", start: "top 80%" },
       });
     }, root);
@@ -45,7 +52,8 @@ export function UseCases() {
       <div className="max-w-7xl mx-auto px-6 md:px-10 grid lg:grid-cols-2 gap-16 items-center">
         <div className="uc-left">
           <h2 className="text-3xl md:text-5xl font-black tracking-tightest uppercase leading-[1] text-balance">
-            One assistant. <br />Two audiences.
+            One assistant. <br />
+            Two audiences.
           </h2>
           <ul className="mt-10 space-y-6">
             {bullets.map((b) => (

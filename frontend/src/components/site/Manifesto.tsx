@@ -11,18 +11,31 @@ export function Manifesto() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".mf-icon", {
-        y: 30, opacity: 0, stagger: 0.15, duration: 0.7, ease: "power3.out",
+        y: 30,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.7,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 80%" },
       });
       const words = root.current?.querySelectorAll(".mf-word");
       if (words) {
         gsap.from(words, {
-          y: 20, opacity: 0, stagger: 0.04, duration: 0.6, ease: "power2.out",
+          y: 20,
+          opacity: 0,
+          stagger: 0.04,
+          duration: 0.6,
+          ease: "power2.out",
           scrollTrigger: { trigger: root.current, start: "top 75%" },
         });
       }
       gsap.from(".mf-cta", {
-        y: 20, opacity: 0, stagger: 0.1, duration: 0.6, delay: 0.2, ease: "power3.out",
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.6,
+        delay: 0.2,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
     }, root);
@@ -32,11 +45,7 @@ export function Manifesto() {
   const headline = "Freedom isn't freedom if someone's always watching.";
 
   return (
-    <section
-      ref={root}
-      id="vision"
-      className="dark bg-bg-dark text-white py-28 md:py-36"
-    >
+    <section ref={root} id="vision" className="dark bg-bg-dark text-white py-28 md:py-36">
       <div className="max-w-7xl mx-auto px-6 md:px-10 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-4 flex items-center gap-6 lg:flex-col lg:items-start">
           {[Eye, ScanEye, EyeOff].map((Icon, i) => (
@@ -65,7 +74,9 @@ export function Manifesto() {
             ))}
           </h2>
           <p className="mt-8 text-sm md:text-base font-light leading-[1.7] text-white/80 max-w-2xl">
-            HIREOS is built to remove repetitive job-search work. It helps candidates present themselves better, find relevant openings faster, and stay consistent with outreach until opportunities respond.
+            HIREOS is built to remove repetitive job-search work. It helps candidates present
+            themselves better, find relevant openings faster, and stay consistent with outreach
+            until opportunities respond.
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
             <a href="#how" className="mf-cta btn-outline-light text-sm font-semibold">

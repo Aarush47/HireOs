@@ -22,7 +22,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "HIREOS — AI Job Search Copilot" },
       {
         property: "og:description",
-        content: "An AI assistant that prepares your resume, finds matching jobs, and manages outreach on your behalf.",
+        content:
+          "An AI assistant that prepares your resume, finds matching jobs, and manages outreach on your behalf.",
       },
     ],
   }),

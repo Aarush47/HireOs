@@ -10,11 +10,18 @@ export function PrivacyStatement() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".ps-head > *", {
-        y: 40, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power3.out",
+        y: 40,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.8,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
       gsap.from(".orchestration-image", {
-        y: 32, opacity: 0, duration: 0.7, ease: "power3.out",
+        y: 32,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
         scrollTrigger: { trigger: ".pipeline-grid", start: "top 74%" },
       });
     }, root);
@@ -22,11 +29,7 @@ export function PrivacyStatement() {
   }, []);
 
   return (
-    <section
-      ref={root}
-      id="features"
-      className="dark py-28 md:py-36 bg-bg-dark text-white"
-    >
+    <section ref={root} id="features" className="dark py-28 md:py-36 bg-bg-dark text-white">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="ps-head max-w-4xl">
           <h2 className="text-4xl md:text-6xl font-black tracking-tightest leading-[0.95]">
@@ -47,7 +50,8 @@ export function PrivacyStatement() {
           />
 
           <p className="mt-4 text-xs text-white/62">
-            Pipeline: collect profile data → generate resume/email assets → scrape jobs → auto match & apply → follow up until response.
+            Pipeline: collect profile data → generate resume/email assets → scrape jobs → auto match
+            & apply → follow up until response.
           </p>
         </div>
 
