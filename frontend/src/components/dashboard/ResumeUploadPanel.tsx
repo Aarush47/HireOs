@@ -78,6 +78,7 @@ export function ResumeUploadPanel() {
       }
 
       if (data.success) {
+<<<<<<< Updated upstream
         setResult(data.profile || null);
         setStatus(
           data.profile
@@ -85,6 +86,21 @@ export function ResumeUploadPanel() {
             : `✓ Uploaded successfully`
         );
         console.log("Full profile:", data.profile);
+=======
+        setStatus(`✓ Resume uploaded successfully!`);
+        setResult({
+          full_name: "Upload complete",
+          email: "",
+          phone: "",
+          location: "",
+          target_role: "",
+          years_experience: 0,
+          skills: [],
+          education: [],
+          experience: [],
+        });
+        console.log("Upload successful:", data);
+>>>>>>> Stashed changes
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";

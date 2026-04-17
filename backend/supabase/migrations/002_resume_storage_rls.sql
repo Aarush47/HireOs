@@ -7,36 +7,19 @@ ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 -- Drop any existing incorrect policies (if any)
 DROP POLICY IF EXISTS "Allow uploads" ON storage.objects;
 DROP POLICY IF EXISTS "Users can upload to their folder" ON storage.objects;
+DROP POLICY IF EXISTS "Allow authenticated users to upload resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Allow users to read their own resumes" ON storage.objects;
+DROP POLICY IF EXISTS "Allow users to delete their own resumes" ON storage.objects;
 
--- ✅ CORRECT POLICY: Allow authenticated users to upload to their own folder
-CREATE POLICY "Allow authenticated users to upload resumes"
+-- ✅ ALLOW SERVICE ROLE (backend with admin key) - NO RLS CHECK
+-- This allows backend API to upload resumes for authenticated Clerk users
+CREATE POLICY "Service role can manage all resumes"
 ON storage.objects
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  bucket_id = 'resumes' AND
-  auth.uid()::text = split_part(name, '/', 1)
-);
-
--- ✅ Allow users to read their own files
-CREATE POLICY "Allow users to read their own resumes"
-ON storage.objects
-FOR SELECT
-TO authenticated
-USING (
-  bucket_id = 'resumes' AND
-  auth.uid()::text = split_part(name, '/', 1)
-);
-
--- ✅ Allow users to delete their own files
-CREATE POLICY "Allow users to delete their own resumes"
-ON storage.objects
-FOR DELETE
-TO authenticated
-USING (
-  bucket_id = 'resumes' AND
-  auth.uid()::text = split_part(name, '/', 1)
-);
+FOR ALL
+TO service_role
+USING (bucket_id = 'resumes')
+WITH CHECK (bucket_id = 'resumes');
 
 -- Verify policies are created
 SELECT * FROM pg_policies WHERE tablename = 'objects' AND schemaname = 'storage';
+
