@@ -40,7 +40,7 @@ export function PrivacyStatement() {
 
         <div className="pipeline-grid mt-14 rounded-2xl border border-white/14 bg-gradient-to-b from-white/10 to-white/4 p-4 md:p-6 overflow-x-auto">
           <img
-            src="/n8n-workflow.png"
+            src="/Images/Automation.webp"
             alt="n8n-style automation orchestration"
             className="orchestration-image w-full h-auto rounded-lg border border-white/12"
             loading="eager"

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import officeImage from "../../../THE OFFICE.webp";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -46,10 +47,14 @@ export function Hero() {
         </div>
 
         <motion.div className="hero-illustration relative h-105 lg:h-130 grid place-items-center" style={{ y: artY }}>
-          <div className="relative w-full max-w-[520px] px-4 md:px-0 h-full rounded-2xl border border-white/12 bg-gradient-to-b from-accent/8 to-transparent flex items-center justify-center">
-            <div className="text-center text-white/40">
-              <p className="text-sm">Workspace Illustration</p>
-            </div>
+          <div className="relative w-full max-w-[520px] px-4 md:px-0 h-full rounded-2xl border border-white/12 bg-gradient-to-b from-accent/8 to-transparent overflow-hidden">
+            <img
+              src={officeImage}
+              alt="Office workspace"
+              className="h-full w-full object-cover object-center"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/12 via-transparent to-transparent" />
             <div
               className="absolute -inset-x-10 -bottom-8 h-20 -z-10 blur-2xl"
               style={{ background: "radial-gradient(ellipse at center, rgba(0,0,0,0.15), transparent 70%)" }}
