@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { FileUp, CheckCircle, AlertCircle } from "lucide-react";
+import { useAuth } from "@clerk/react";
 
 interface ParseResult {
   success: boolean;
@@ -23,6 +24,7 @@ interface ParseResult {
 }
 
 export function ResumeUploadPanel() {
+  const { getToken } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string>("Upload your resume");
   const [isLoading, setIsLoading] = useState(false);
@@ -46,14 +48,26 @@ export function ResumeUploadPanel() {
       const formData = new FormData();
       formData.append("file", file);
 
+      // Get Clerk auth token
+      const token = await getToken();
+
       // Connect to backend at localhost:3000 or deployed backend URL
       const backendURL =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+        import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
-      const res = await fetch(`${backendURL}/api/parse-resume`, {
+      const res = await fetch(`${backendURL}/api/upload-resume`, {
         method: "POST",
         body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
+
+      if (!res.ok) {
+        const errorData = await res.text();
+        console.error("Backend error response:", { status: res.status, body: errorData });
+        setError(`Upload failed: ${res.status} ${res.statusText}`);
+        setStatus(`Error: ${res.status}`);
+        return;
+      }
 
       const data: ParseResult = await res.json();
 
@@ -63,17 +77,21 @@ export function ResumeUploadPanel() {
         return;
       }
 
-      if (data.success && data.profile) {
-        setResult(data.profile);
+      if (data.success) {
+        setResult(data.profile || null);
         setStatus(
-          `✓ PARSED — ${data.profile.full_name} | ${data.profile.skills?.length || 0} skills | ${data.profile.experience?.length || 0} jobs`
+          data.profile
+            ? `✓ UPLOADED — ${data.message}`
+            : `✓ Uploaded successfully`
         );
         console.log("Full profile:", data.profile);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
+      console.error("Upload error:", err);
+      console.error("Backend URL:", import.meta.env.VITE_BACKEND_URL || "http://localhost:3000");
       setError(msg);
-      setStatus("Upload failed");
+      setStatus("Upload failed - check console for details");
     } finally {
       setIsLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

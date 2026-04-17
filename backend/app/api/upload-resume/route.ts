@@ -3,6 +3,18 @@ import { NextResponse } from "next/server";
 import { ensureClerkUserInSupabase } from "@/lib/auth/sync-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
+// Handle CORS preflight requests
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
 export async function POST(request: Request) {
   const { userId } = await auth();
 
@@ -10,7 +22,15 @@ export async function POST(request: Request) {
 
   if (!userId) {
     console.error("❌ AUTH FAILED — userId is null");
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      {
+        status: 401,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    );
   }
 
   const formData = await request.formData();
@@ -75,9 +95,8 @@ export async function POST(request: Request) {
   // Save to database
   const { error: dbError } = await supabase.from("resumes").insert({
     user_id: userId,
-    file_url: filePath,
+    file_path: filePath,
     file_name: file.name,
-    file_size: file.size,
   });
 
   if (dbError) {
@@ -86,9 +105,18 @@ export async function POST(request: Request) {
   }
 
   console.log("✅ DATABASE SAVED — userId:", userId);
-  return NextResponse.json({
-    success: true,
-    file_url: filePath,
-    message: "Resume uploaded successfully",
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      file_url: filePath,
+      message: "Resume uploaded successfully",
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    }
+  );
 }
