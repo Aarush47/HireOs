@@ -1,4 +1,8 @@
-import { supabaseAdmin } from "@/lib/supabase/admin";
+/**
+ * NOTE: User sync is handled on the backend in /api/auth/sync-clerk-user
+ * This client-side function is deprecated and should not be used.
+ * The backend handles Supabase operations with proper service role credentials.
+ */
 
 export async function upsertClerkUser(clerkUser: {
   id: string;
@@ -7,24 +11,7 @@ export async function upsertClerkUser(clerkUser: {
   lastName?: string | null;
   imageUrl?: string;
 }) {
-  const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? "";
-  const first_name = clerkUser.firstName ?? "";
-  const last_name = clerkUser.lastName ?? "";
-  const full_name = `${first_name} ${last_name}`.trim();
-
-  const { error } = await supabaseAdmin.from("users").upsert({
-    id: clerkUser.id,
-    email,
-    first_name,
-    last_name,
-    full_name,
-    avatar_url: clerkUser.imageUrl ?? "",
-  });
-
-  if (error) throw new Error(`Failed to sync Clerk user: ${error.message}`);
-
-  // Create empty profile if not exists
-  await supabaseAdmin
-    .from("profiles")
-    .upsert({ id: clerkUser.id }, { onConflict: "id", ignoreDuplicates: true });
+  // This is now handled by the backend after successful Clerk authentication
+  // The backend endpoint /api/auth/sync-clerk-user creates the user record
+  return;
 }

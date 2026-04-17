@@ -11,11 +11,18 @@ export function WalletDemo() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".wd-phone", {
-        x: -80, opacity: 0, duration: 1, ease: "power3.out",
+        x: -80,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
       gsap.from(".wd-text > *", {
-        x: 50, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power3.out",
+        x: 50,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.8,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
     }, root);
@@ -36,7 +43,8 @@ export function WalletDemo() {
             Your profile becomes a job search engine.
           </h2>
           <p className="text-2xl md:text-3xl font-light mt-4 text-muted-foreground">
-            HIREOS monitors openings, matches your fit, and keeps outreach moving until the right response arrives.
+            HIREOS monitors openings, matches your fit, and keeps outreach moving until the right
+            response arrives.
           </p>
         </div>
       </div>
@@ -61,7 +69,10 @@ function PhoneMock() {
         </p>
         <div className="mt-8 w-full space-y-3">
           {["Skills", "Education", "Experience", "Projects"].map((w) => (
-            <div key={w} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3 border border-white/5">
+            <div
+              key={w}
+              className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3 border border-white/5"
+            >
               <Wallet className="w-5 h-5 text-accent" />
               <span className="text-sm font-medium">{w}</span>
             </div>

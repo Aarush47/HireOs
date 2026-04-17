@@ -10,15 +10,25 @@ export function ValueProp() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(".vp-left", {
-        x: -50, opacity: 0, duration: 0.9, ease: "power3.out",
+        x: -50,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 75%" },
       });
       gsap.from(".vp-key", {
-        scale: 0.85, opacity: 0, duration: 1, ease: "power3.out",
+        scale: 0.85,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 70%" },
       });
       gsap.from(".vp-right > *", {
-        x: 40, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power3.out",
+        x: 40,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 0.8,
+        ease: "power3.out",
         scrollTrigger: { trigger: root.current, start: "top 70%" },
       });
     }, root);
@@ -45,13 +55,15 @@ export function ValueProp() {
           <div>
             <h3 className="text-xl font-bold">Share your full profile</h3>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-              Add skills, education, experience, projects, role preferences, and any detail the agent needs.
+              Add skills, education, experience, projects, role preferences, and any detail the
+              agent needs.
             </p>
           </div>
           <div>
             <h3 className="text-xl font-bold">Get a resume and outreach kit</h3>
             <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-              The assistant creates a resume tailored to the role and drafts personalized emails in your voice.
+              The assistant creates a resume tailored to the role and drafts personalized emails in
+              your voice.
             </p>
           </div>
         </div>
@@ -62,7 +74,13 @@ export function ValueProp() {
 
 function KeyholeArt() {
   return (
-    <svg width="160" height="220" viewBox="0 0 160 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="160"
+      height="220"
+      viewBox="0 0 160 220"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M80 8 C36 8 8 40 8 84 C8 116 28 142 56 156 L40 212 L120 212 L104 156 C132 142 152 116 152 84 C152 40 124 8 80 8 Z M80 60 a26 26 0 1 1 -0.001 0 Z M68 100 L92 100 L100 150 L60 150 Z"
         fill="#111"

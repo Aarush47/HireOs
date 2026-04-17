@@ -13,9 +13,7 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "backdrop-blur-md bg-bg-light/86 border-b border-border"
-          : "bg-transparent"
+        scrolled ? "backdrop-blur-md bg-bg-light/86 border-b border-border" : "bg-transparent"
       }`}
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-4">
@@ -27,16 +25,19 @@ export function Navbar() {
         </a>
 
         <div className="hidden lg:flex items-center gap-8 text-xs uppercase tracking-[0.18em] font-semibold">
-          <a href="#how" className="hover:text-muted-foreground transition">How it works</a>
-          <a href="#features" className="hover:text-muted-foreground transition">Features</a>
-          <a href="#vision" className="hover:text-muted-foreground transition">For employers</a>
+          <a href="#how" className="hover:text-muted-foreground transition">
+            How it works
+          </a>
+          <a href="#features" className="hover:text-muted-foreground transition">
+            Features
+          </a>
+          <a href="#vision" className="hover:text-muted-foreground transition">
+            For employers
+          </a>
         </div>
 
         <div className="flex items-center gap-2">
-          <a
-            href="#how"
-            className="hidden sm:inline-flex btn-accent text-xs px-4 py-2"
-          >
+          <a href="#how" className="hidden sm:inline-flex btn-accent text-xs px-4 py-2">
             Get started
           </a>
           <button
