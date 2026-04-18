@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
   role: "user" | "assistant";
@@ -29,6 +30,11 @@ export function ResumeChat({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const waitForAiDelay = () =>
+    new Promise((resolve) =>
+      setTimeout(resolve, 1000 + Math.floor(Math.random() * 1001))
+    );
+
   // Initial greeting from Together AI
   useEffect(() => {
     const getInitialMessage = async () => {
@@ -45,6 +51,7 @@ export function ResumeChat({
 
         const data = await response.json();
         if (data.message) {
+          await waitForAiDelay();
           setMessages([
             {
               role: "assistant",
@@ -97,6 +104,7 @@ export function ResumeChat({
 
       const data = await response.json();
       if (data.message) {
+        await waitForAiDelay();
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: data.message },
@@ -119,11 +127,14 @@ export function ResumeChat({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full min-h-96">
-        <div className="text-center">
+        <div className="w-full max-w-2xl rounded-xl border border-border bg-card p-4 space-y-3">
           <Loader className="w-8 h-8 animate-spin mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground text-center">
             Parsing your resume with Together AI...
           </p>
+          <Skeleton className="h-4 w-44" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
         </div>
       </div>
     );

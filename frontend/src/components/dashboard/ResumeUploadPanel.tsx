@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { FileUp, CheckCircle, AlertCircle, Loader } from "lucide-react";
+import { FileUp, AlertCircle, Loader } from "lucide-react";
 import { ResumeChat } from "@/components/onboarding/ResumeChat";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UploadResponse {
   success: boolean;
@@ -13,7 +14,46 @@ interface UploadResponse {
   error?: string;
 }
 
-export function ResumeUploadPanel() {
+interface ResumeUploadPayload {
+  rawCv: string;
+  parsedSkills: string[];
+  careerStory: string;
+  targetRoles: string[];
+}
+
+interface ResumeUploadPanelProps {
+  onResumeAnalyzed?: (payload: ResumeUploadPayload) => void;
+  onChatClosed?: () => void;
+}
+
+function deriveTargetRoles(skills: string[], summary: string): string[] {
+  const source = `${skills.join(" ")} ${summary}`.toLowerCase();
+  const roles: string[] = [];
+
+  if (/(react|typescript|javascript|frontend|ui)/.test(source)) {
+    roles.push("Frontend Engineer");
+  }
+  if (/(node|python|api|backend|microservice)/.test(source)) {
+    roles.push("Software Engineer");
+  }
+  if (/(sql|analytics|data|dashboard|etl)/.test(source)) {
+    roles.push("Data Analyst");
+  }
+  if (/(product|roadmap|stakeholder|market)/.test(source)) {
+    roles.push("Product Manager");
+  }
+
+  if (roles.length === 0) {
+    roles.push("Software Engineer");
+  }
+
+  return roles.slice(0, 3);
+}
+
+export function ResumeUploadPanel({
+  onResumeAnalyzed,
+  onChatClosed,
+}: ResumeUploadPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string>("Upload your resume");
   const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +96,19 @@ export function ResumeUploadPanel() {
 
       if (data.success) {
         setStatus("✓ Resume uploaded! Opening chat...");
+        const parsedSkills = data.analysis?.key_skills ?? [];
+        const careerStory = data.analysis?.summary ?? "";
+        const rawCv = [file.name, careerStory, parsedSkills.join(", ")]
+          .filter(Boolean)
+          .join("\n");
+
+        onResumeAnalyzed?.({
+          rawCv,
+          parsedSkills,
+          careerStory,
+          targetRoles: deriveTargetRoles(parsedSkills, careerStory),
+        });
+
         // Store the resume text for the chat
         if (data.analysis?.summary) {
           setResumeText(
@@ -90,6 +143,7 @@ export function ResumeUploadPanel() {
             setShowChat(false);
             setStatus("Upload another resume");
             setResumeText("");
+            onChatClosed?.();
           }}
         />
       </div>
@@ -144,9 +198,13 @@ export function ResumeUploadPanel() {
             </div>
           </div>
         ) : isLoading ? (
-          <div className="flex items-center gap-3">
-            <Loader className="w-5 h-5 animate-spin text-primary flex-shrink-0" />
-            <p className="text-sm text-muted-foreground">{status}</p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Loader className="w-5 h-5 animate-spin text-primary flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">{status}</p>
+            </div>
+            <Skeleton className="h-3 w-48" />
+            <Skeleton className="h-3 w-64" />
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">{status}</p>
