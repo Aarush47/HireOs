@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { generateJsonWithGemini } from "@/lib/ai/gemini";
-import { sanitizeAnswer, sanitizeForGemini } from "@/lib/utils/sanitize";
+import { askGrok, askGrokJSON } from "@/lib/grok";
+import { sanitizeAnswer, sanitizeTextForAI } from "@/lib/utils/sanitize";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     // Get user profile and resume text
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
-      .select("resume_text")
+      .select("raw_cv")
       .eq("id", userId)
       .single();
 
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     }
 
     const sanitizedAnswer = sanitizeAnswer(user_answer);
-    const resumeText = sanitizeForGemini(profile.resume_text || "");
+    const resumeText = sanitizeTextForAI(profile.raw_cv || "");
 
     // Append user answer to conversation history
     const updatedHistory: ConversationMessage[] = [
@@ -157,10 +157,8 @@ Respond ONLY in this JSON format:
   "conversation_stage": ${nextStage}
 }`;
 
-    const nextResponse = await generateJsonWithGemini<NextQuestionResponse>(
-      systemPrompt,
-      "Generate the next response."
-    );
+    const raw = await askGrok(systemPrompt);
+    const nextResponse = parseGrokJSON<NextQuestionResponse>(raw);
 
     // Add AI response to history
     let finalHistory = updatedHistory;

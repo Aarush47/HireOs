@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { generateJsonWithGemini } from "@/lib/ai/gemini";
-import { sanitizeForGemini } from "@/lib/utils/sanitize";
+import { askGrok, askGrokJSON } from "@/lib/grok";
+import { sanitizeTextForAI } from "@/lib/utils/sanitize";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     // Get user profile and resume text
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
-      .select("resume_text")
+      .select("raw_cv")
       .eq("id", userId)
       .single();
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const resumeText = sanitizeForGemini(profile.resume_text || "");
+    const resumeText = sanitizeTextForAI(profile.raw_cv || "");
 
     // Create a conversation session
     const { data: session, error: sessionError } = await supabaseAdmin
@@ -62,7 +62,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate first question using Gemini
+    interface FirstQuestion {
+      question: string;
+      question_theme: string;
+      conversation_stage: number;
+    }
+
     const systemPrompt = `You are a career intelligence agent. Your job is to understand a job seeker's
 communication style, tone, personality, and work preferences through natural
 conversation — so you can write job applications that sound exactly like them.
@@ -87,23 +92,15 @@ ${resumeText}
 Start with one warm, specific, opening question based on something interesting
 in their resume. Make it personal, not generic.
 
-Respond ONLY in this JSON format:
+Respond ONLY with valid JSON, no markdown fences:
 {
   "question": "your question here",
   "question_theme": "communication_style | personality | values | work_style | aspirations",
   "conversation_stage": 1
 }`;
 
-    interface FirstQuestion {
-      question: string;
-      question_theme: string;
-      conversation_stage: number;
-    }
-
-    const firstQuestion = await generateJsonWithGemini<FirstQuestion>(
-      systemPrompt,
-      "Generate the first question."
-    );
+    const firstQuestion = await askGrokJSON<FirstQuestion>(systemPrompt);
+    console.log("✅ PARSED QUESTION:", firstQuestion);
 
     // Update session with first message
     const { error: updateError } = await supabaseAdmin

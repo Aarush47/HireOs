@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@clerk/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -36,6 +37,7 @@ export function TonalityChat({
   onComplete,
   backendUrl = "http://localhost:3000",
 }: TonalityChatProps) {
+  const { getToken } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionId, setSessionId] = useState<string>("");
   const [inputValue, setInputValue] = useState("");
@@ -49,9 +51,13 @@ export function TonalityChat({
   useEffect(() => {
     const initializeChat = async () => {
       try {
+        const token = await getToken();
         const response = await fetch(`${backendUrl}/api/tonality/start`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
         });
 
         const data = await response.json();
@@ -83,7 +89,7 @@ export function TonalityChat({
     };
 
     initializeChat();
-  }, [backendUrl]);
+  }, [backendUrl, getToken]);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -109,9 +115,13 @@ export function TonalityChat({
     setMessages(updatedMessages);
 
     try {
+      const token = await getToken();
       const response = await fetch(`${backendUrl}/api/tonality/respond`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
         body: JSON.stringify({
           session_id: sessionId,
           user_answer: userMessage,
@@ -131,7 +141,10 @@ export function TonalityChat({
           `${backendUrl}/api/tonality/analyze`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : "",
+            },
             body: JSON.stringify({ session_id: sessionId }),
           }
         );

@@ -10,6 +10,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "ignoreDeprecations": "6.0",
     /* Next.js specific */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

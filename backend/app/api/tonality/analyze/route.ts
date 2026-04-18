@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { generateJsonWithGemini } from "@/lib/ai/gemini";
-import { sanitizeForGemini } from "@/lib/utils/sanitize";
+import { askGrok, askGrokJSON } from "@/lib/grok";
+import { sanitizeTextForAI } from "@/lib/utils/sanitize";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     // Get user profile and resume text
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
-      .select("resume_text")
+      .select("raw_cv")
       .eq("id", userId)
       .single();
 
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const resumeText = sanitizeForGemini(profile.resume_text || "");
+    const resumeText = sanitizeTextForAI(profile.raw_cv || "");
     const conversationHistory = session.conversation_history || [];
 
     // Build conversation history string
@@ -119,10 +119,8 @@ Analyze and respond ONLY in this JSON format:
 
 Be specific and personal — generic traits are useless. Extract what makes THIS person distinct.`;
 
-    const analysis = await generateJsonWithGemini<AnalysisResult>(
-      systemPrompt,
-      "Generate the personality profile."
-    );
+    const raw = await askGrok(systemPrompt);
+    const analysis = parseGrokJSON<AnalysisResult>(raw);
 
     // Update profiles table with analysis results
     const { error: updateError } = await supabaseAdmin

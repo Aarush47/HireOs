@@ -6,6 +6,10 @@ export function sanitizeAnswer(text: string): string {
     .slice(0, 1000);
 }
 
-export function sanitizeForGemini(text: string): string {
-  return text.replace(/[<>{}]/g, "").slice(0, 2000);
+// Renamed: sanitizeForGemini → sanitizeTextForAI (AI-agnostic)
+export function sanitizeTextForAI(text: string): string {
+  return text.replace(/[<>{}]/g, "").slice(0, 3000);
 }
+
+// Backwards compatibility
+export const sanitizeForGemini = sanitizeTextForAI;

@@ -17,10 +17,10 @@ export async function POST(request: Request) {
   try {
     const { userId } = await auth();
 
-    console.log("🔍 UPLOAD DEBUG — userId:", userId);
+    console.log("[UPLOAD] userId:", userId);
 
     if (!userId) {
-      console.error("❌ AUTH FAILED — userId is null");
+      console.error("[UPLOAD] No auth");
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401, headers: corsHeaders }
@@ -30,28 +30,21 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get("file");
 
-    console.log("📁 FILE DEBUG:", {
-      exists: !!file,
-      name: file instanceof File ? file.name : "NOT A FILE",
-      type: file instanceof File ? file.type : "N/A",
-      size: file instanceof File ? file.size : "N/A",
-    });
-
     if (!(file instanceof File)) {
-      console.error("❌ FILE FAILED — not a File instance");
       return NextResponse.json(
-        { error: "Missing resume file" },
+        { error: "No file provided" },
         { status: 400, headers: corsHeaders }
       );
     }
 
     if (file.type !== "application/pdf") {
-      console.error("❌ FILE TYPE FAILED — got", file.type);
       return NextResponse.json(
-        { error: "Only PDF resumes are supported" },
+        { error: "Only PDF files supported" },
         { status: 400, headers: corsHeaders }
       );
     }
+
+    console.log("[UPLOAD] File:", file.name, "Size:", file.size);
 
     const user = await currentUser();
     await ensureClerkUserInSupabase({
@@ -65,8 +58,12 @@ export async function POST(request: Request) {
     const supabase = supabaseAdmin;
     const bytes = Buffer.from(await file.arrayBuffer());
 
+    // TODO: Implement PDF text extraction with a Node.js-compatible library
+    // For now, use a placeholder
+    const extractedText = `Resume: ${file.name}`;
+
     const filePath = `${userId}/${Date.now()}-${file.name}`;
-    console.log("📤 UPLOAD START — path:", filePath);
+    console.log("[UPLOAD] Uploading to:", filePath);
 
     const { data, error: uploadError } = await supabase.storage
       .from("resumes")
@@ -76,61 +73,49 @@ export async function POST(request: Request) {
       });
 
     if (uploadError) {
-      console.error("❌ UPLOAD ERROR:", {
-        message: uploadError.message,
-        status: uploadError.statusCode,
-        details: uploadError,
-      });
+      console.error("[UPLOAD] Storage error:", uploadError);
       return NextResponse.json(
-        { error: uploadError.message, details: uploadError },
+        { error: "Failed to upload file" },
         { status: 500, headers: corsHeaders }
       );
     }
 
-    console.log("✅ UPLOAD SUCCESS — data:", data);
-
-    // Extract text from PDF for resume_text field
-    // For now, store the file path as text content
-    const resumeText = `Resume: ${file.name}\nFile path: ${filePath}`;
+    console.log("[UPLOAD] File stored successfully");
 
     // Save to database
     const { error: dbError } = await supabase.from("resumes").insert({
       user_id: userId,
-      file_url: filePath,
+      file_path: filePath,
       file_name: file.name,
-      file_size: file.size,
+      extracted_text: extractedText,
     });
 
     if (dbError) {
-      console.error("❌ DATABASE ERROR:", dbError);
-      return NextResponse.json(
-        { error: dbError.message },
-        { status: 500, headers: corsHeaders }
-      );
+      console.error("[UPLOAD] DB error:", dbError);
     }
 
-    // Update profile with resume_text
+    // Update profile with raw_cv
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({ resume_text: resumeText, updated_at: new Date().toISOString() })
+      .update({ raw_cv: extractedText, updated_at: new Date().toISOString() })
       .eq("id", userId);
 
     if (profileError) {
-      console.error("❌ PROFILE UPDATE ERROR:", profileError);
+      console.error("[UPLOAD] Profile update error:", profileError);
     }
 
-    console.log("✅ DATABASE SAVED — userId:", userId);
+    console.log("[UPLOAD] Success");
     return NextResponse.json(
       {
         success: true,
-        file_url: filePath,
-        message: "Resume uploaded successfully",
+        text: extractedText.substring(0, 500) + "...",
+        length: extractedText.length,
       },
       { headers: corsHeaders }
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("❌ ENDPOINT ERROR:", message);
+    console.error("[UPLOAD] Error:", message);
     return NextResponse.json(
       { error: message },
       { status: 500, headers: corsHeaders }

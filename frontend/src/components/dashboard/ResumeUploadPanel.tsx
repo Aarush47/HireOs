@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { FileUp, CheckCircle, AlertCircle } from "lucide-react";
+import { useAuth } from "@clerk/react";
 import { TonalityChat } from "@/components/onboarding/TonalityChat";
+import { JobMatchingPanel } from "@/components/dashboard/JobMatchingPanel";
 
 interface ParseResult {
   success: boolean;
@@ -8,12 +10,14 @@ interface ParseResult {
 }
 
 export function ResumeUploadPanel() {
+  const { getToken } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string>("Upload your resume");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showJobMatching, setShowJobMatching] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,13 +36,25 @@ export function ResumeUploadPanel() {
       const formData = new FormData();
       formData.append("file", file);
 
+      // Get Clerk auth token
+      const token = await getToken();
+
       const backendURL =
         import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
       const res = await fetch(`${backendURL}/api/upload-resume`, {
         method: "POST",
         body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Upload error response:", { status: res.status, body: errorText });
+        setError(`Upload failed: ${res.status} ${res.statusText}`);
+        setStatus(`Error: ${res.status}`);
+        return;
+      }
 
       const data: ParseResult = await res.json();
 
@@ -57,6 +73,8 @@ export function ResumeUploadPanel() {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
+      console.error("Upload error:", err);
+      console.error("Backend URL:", import.meta.env.VITE_BACKEND_URL || "http://localhost:3000");
       setError(msg);
       setStatus("Upload failed");
     } finally {
@@ -70,11 +88,29 @@ export function ResumeUploadPanel() {
       <div className="w-full">
         <TonalityChat
           onComplete={() => {
-            window.location.href = "/dashboard";
+            setShowJobMatching(true);
+            setShowChat(false);
           }}
           backendUrl={
             import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
           }
+        />
+      </div>
+    );
+  }
+
+  if (showJobMatching) {
+    return (
+      <div className="w-full">
+        <JobMatchingPanel
+          backendUrl={
+            import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
+          }
+          onNavigate={(page) => {
+            if (page === "dashboard") {
+              window.location.href = "/dashboard";
+            }
+          }}
         />
       </div>
     );
