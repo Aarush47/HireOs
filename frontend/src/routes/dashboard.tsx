@@ -219,6 +219,7 @@ function DashboardPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const navigate = useNavigate();
+  const apiBase = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/$/, "");
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [cvText, setCvText] = useState("");
@@ -246,7 +247,7 @@ function DashboardPage() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("/api/profile");
+      const response = await fetch(`${apiBase}/api/profile`);
       if (response.ok) {
         const data = await response.json();
         setProfile(data.profile);
@@ -267,7 +268,7 @@ function DashboardPage() {
     setParsing(true);
     try {
       // Parse CV
-      const parseResponse = await fetch("/api/ai/parse-cv", {
+      const parseResponse = await fetch(`${apiBase}/api/ai/parse-cv`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cvText }),
@@ -281,7 +282,7 @@ function DashboardPage() {
       const { parsed } = parseData;
 
       // Update profile
-      const updateResponse = await fetch("/api/profile/update", {
+      const updateResponse = await fetch(`${apiBase}/api/profile/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -370,7 +371,7 @@ function DashboardPage() {
     }));
 
     try {
-      const updateResponse = await fetch("/api/profile/update", {
+      const updateResponse = await fetch(`${apiBase}/api/profile/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

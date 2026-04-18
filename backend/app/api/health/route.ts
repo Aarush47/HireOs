@@ -7,6 +7,7 @@ export async function GET() {
       service: "HireOS Backend API",
       version: "2.0 - Together AI",
       endpoints: {
+        health: "GET /api/health - Service health check",
         upload_resume: "POST /api/upload-resume - Upload PDF and get analysis via Together AI",
         profile: "GET /api/profile - Get user profile",
         profile_update: "POST /api/profile/update - Update user profile",
@@ -15,4 +16,3 @@ export async function GET() {
     { status: 200 }
   );
 }
-
